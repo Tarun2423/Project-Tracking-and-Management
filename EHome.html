@@ -121,15 +121,44 @@
           </div>
         </div>
       </div>
+      <div class="Charts" id="ChartsCon">
+        <div class="Bar">
+          <div class="progress-bar" id="bar">
+            <div class="progress"></div>
+          </div>
+        </div>
+        <div class="bardetails" id="bardetails">
+          <div class="tt">
+            <p>Total No. Of Tasks : </p>
+            <p id="totaltask"></p>
+          </div>
+          <div class="tf">
+            <p>No. Of Tasks Finished : </p>
+            <p id="finished"></p>
+          </div>
+
+        </div>
+      </div>
 
     </div>
   </div>
   <script>
+   
+
     function profile() {
       document.getElementById("P").style.display = "flex";
       document.getElementById("Projects").style.display = "none";
       document.getElementById("pro").classList.add("selected");
       document.getElementById("charts").classList.remove("selected");
+      document.getElementById("tasks").classList.remove("selected");
+      document.getElementById("ChartsCon").style.display = "none";
+    }
+    function charts(){
+      document.getElementById("P").style.display = "none";
+      document.getElementById("ChartsCon").style.display = "";
+      document.getElementById("Projects").style.display = "none";
+      document.getElementById("pro").classList.remove("selected");
+      document.getElementById("charts").classList.add("selected");
       document.getElementById("tasks").classList.remove("selected");
     }
 
@@ -202,6 +231,7 @@
       document.getElementById("charts").classList.remove("selected");
       document.getElementById("tasks").classList.add("selected");
       document.getElementById("P").style.display = "none";
+      document.getElementById("ChartsCon").style.display = "none";
       document.getElementById("Projects").style.display = "";
     }
 
@@ -237,7 +267,7 @@
       document.getElementById("abtn").style.display = "none";
       document.getElementById("tcontainer").style.display = "none";
       document.getElementById("P").style.display = "none";
-      
+      document.getElementById("ChartsCon").style.display = "none";
       document.getElementById("name").style.display = "";
       document.getElementById("midInput").value = user.empid;
       document.getElementById("mnameInput").value = user.name;
@@ -291,7 +321,34 @@
         xhrt.send();
       }
       getTasks();
+      fetch();
+      function fetch() {
 
+var pname = JSON.parse(window.localStorage.getItem('user')).name.trim();
+console.log(pname);
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      var data = (JSON.parse(xhr.responseText));
+      console.log(data);
+      var total = data[0].nooftasks;
+      var finished = data[0].finished;
+      var unfinished = data[0].unfinished;
+      document.getElementById("totaltask").textContent = total;
+      document.getElementById("finished").textContent = finished;
+      document.getElementById("bar").style.display = "";
+      document.getElementById("bardetails").style.display = "";
+      var fp = Math.ceil((finished / total) * 100)
+      const progressBar = document.querySelector('.progress');
+      const percentageCompleted = fp;
+      progressBar.style.height = percentageCompleted + '%';
+      progressBar.textContent = percentageCompleted + '%';
+    }
+  }
+  xhr.open("GET", "http://localhost:5678/ProjectManagement/getEDetails?pname=" + pname, true);
+  xhr.send();
+}
+fetch();
     }
 
     function getTasks() {
