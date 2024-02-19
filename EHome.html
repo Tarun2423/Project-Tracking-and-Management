@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manager</title>
+  <link rel="stylesheet" href="ehome.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Protest+Riot&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+  <div class="app">
+    <div class="nav">
+      <div class="title">
+        <p>Project Management</p>
+      </div>
+      <div class="links">
+        <p id="tasks" class="selected" onclick="tasks()">Tasks</p>
+        <p id="charts" onclick="charts()">Charts</p>
+        <p id="pro" onclick="profile()">Profile</p>
+      </div>
+      <div class="profile">
+        <img src="userpic.jpg" alt="">
+        <p id="name" onclick="toggle()"></p>
+        <p id="logout" onclick="logout()">Logout</p>
+      </div>
+    </div>
+    <div class="Home" id="Home">
+      <div class="Projects" id="Projects">
+        <button class="btn1" id="abtn" style="position: absolute;top: 100px;right: 190px;" onclick="atask()">Back</button>
+        <div class="tcontainer" id="tcontainer">
+          <div class="item">
+            <p>Task Name</p>
+            <select name="task" id="task" required>
+              <option value="" disabled selected hidden>Select an option below</option>
+            </select>
+          </div>
+          <div class="item">
+            <p>Employee Name</p>
+            <select name="toemp" id="toempl" required>
+              <option value="" disabled selected hidden>Select an option below</option>
+            </select>
+          </div>
+          <div class="item">
+            <p>Report</p>
+            <input type="text" id="report">
+          </div>
+
+          <button style="margin-top: 20px;" onclick="addTask()">Submit</button>
+        </div>
+        <div class="tasktable" id="tasktable">
+
+          <div class="top">
+            <div class="search">
+              <input type="text" placeholder="Enter text to search" oninput="searchT()" id="tinp">
+              <span style="cursor: pointer;" class="material-symbols-outlined">
+                search
+              </span>
+            </div>
+          </div>
+          <div class="table">
+            <div class="heading">
+              <p style="width: 10%;">Task Id</p>
+              <p style="width: 15%;">Task Name</p>
+              <p style="width: 20%;">Project Name</p>
+              <p style="width: 25%;">Task Details</p>
+              <p style="width: 10%;">Assigned on</p>
+              <p style="width: 10%;">Deadline</p>
+              <p style="width: 10%;">Status</p>
+            </div>
+            <hr style="color: black;width: 100%;" />
+            <div class="tableContent" id="ttableContent">
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="P" id="P">
+        <div class="Profile" id="profileContainer">
+          <div class="Pimg">
+            <img id="displayedMImage" alt="Displayed Image" src="">
+          </div>
+
+          <div class="pout">
+            <div class="pdetails">
+              <div class="profileField">
+                <label for="employeeId" class="label">Employee Id:</label>
+                <input type="text" id="midInput" class="input" value="24" disabled>
+              </div>
+              <div class="profileField">
+                <label for="nameInput" class="label">Name:</label>
+                <input type="text" id="mnameInput" class="input" value="Tarun" disabled>
+              </div>
+              <div class="profileField">
+                <label for="emailInput" class="label">Email Id:</label>
+                <input type="text" id="memailInput" class="input" value="Tarun@gmail.com" disabled>
+              </div>
+              <div class="profileField">
+                <label for="dobInput" class="label">Date Of Birth:</label>
+                <input type="text" id="mdobInput" class="input" value="24-05-2002" disabled>
+              </div>
+              <div class="profileField">
+                <label for="roleInput" class="label">Role:</label>
+                <input type="text" id="mroleInput" class="input" value="Developer" disabled>
+              </div>
+              <div class="profileField">
+                <label for="dojInput" class="label">Date Of Joining:</label>
+                <input type="text" id="mdojInput" class="input" value="01-01-2023" disabled>
+              </div>
+              <div class="profileField">
+                <label for="mobileInput" class="label">Mobile Number:</label>
+                <input type="text" id="mmobileInput" class="input" value="9360623104" disabled>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <script>
+    function profile() {
+      document.getElementById("P").style.display = "flex";
+      document.getElementById("Projects").style.display = "none";
+      document.getElementById("pro").classList.add("selected");
+      document.getElementById("charts").classList.remove("selected");
+      document.getElementById("tasks").classList.remove("selected");
+    }
+
+    function ctask() {
+      document.getElementById("tcontainer").style.display = "";
+      document.getElementById("tasktable").style.display = "none";
+      document.getElementById("cbtn").style.display = "none";
+      document.getElementById("abtn").style.display = "";
+    }
+
+    function atask() {
+      document.getElementById("tcontainer").style.display = "none";
+      document.getElementById("tasktable").style.display = "";
+      document.getElementById("abtn").style.display = "none";
+      document.getElementById("cbtn").style.display = "";
+      getTasks()
+    }
+
+    function showApiResultModal(message, isSuccess) {
+      return new Promise((resolve) => {
+        if (isSuccess) {
+          Swal.fire({
+            title: "Success",
+            text: message,
+            icon: "success",
+          }).then(() => {
+            resolve();
+          });
+        } else {
+          Swal.fire({
+            title: "Failure",
+            text: message,
+            icon: "error",
+          }).then(() => {
+            resolve();
+          });
+        }
+      });
+    }
+
+    function addTask() {
+      var user = JSON.parse(window.localStorage.getItem("user"));
+      var tname = document.getElementById("task").value;
+      var toemp = document.getElementById("toempl").value;
+      var report = document.getElementById("report").value;
+      if (tname!=="" && toemp!=="" && report!=="") {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (xhttp.readyState == 4 && xhttp.status == 200) {
+            showApiResultModal("Report successfully sent", true);
+          } else if (xhttp.readyState == 4 && xhttp.status !== 200) {
+            searchApiResultModal("failed sending..!", false);
+          }
+        }
+        xhttp.open("POST", "http://localhost:5678/ProjectManagement/addReport", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        var data = "tname=" + tname + "&from=" + toemp + "&to=" +user.reportingto + "&report=" + report;
+        xhttp.send(data);
+      } else {
+        alert("fill all details")
+      }
+    }
+
+    function handleAddP() {
+      window.location.href = "http://localhost:5678/ProjectManagement/Project.html"
+    }
+
+    function tasks() {
+      document.getElementById("pro").classList.remove("selected");
+      document.getElementById("charts").classList.remove("selected");
+      document.getElementById("tasks").classList.add("selected");
+      document.getElementById("P").style.display = "none";
+      document.getElementById("Projects").style.display = "";
+    }
+
+
+    function logout() {
+
+      window.location.href = "http://localhost:5678/ProjectManagement/Login.html"
+    }
+    document.getElementById("Home").addEventListener("click", function() {
+      retoggle();
+    })
+
+    function toggle() {
+      document.getElementById("logout").style.display = "";
+      document.getElementById("name").style.display = "none";
+    }
+
+    function retoggle() {
+      document.getElementById("logout").style.display = "none";
+      document.getElementById("name").style.display = "";
+    }
+
+    function handleAdd() {
+      window.location.href = ("http://localhost:5678/ProjectManagement/Register.html")
+    }
+    window.onload = function() {
+      var user = JSON.parse(window.localStorage.getItem("user"));
+      var byteArray = new Uint8Array(user.image);
+      var imageUrl = 'data:image/jpeg;base64,' + btoa(String.fromCharCode.apply(null, byteArray));
+      document.getElementById("displayedMImage").src = imageUrl;
+      document.getElementById("name").innerHTML = user.name;
+      document.getElementById("logout").style.display = "none";
+      document.getElementById("abtn").style.display = "none";
+      document.getElementById("tcontainer").style.display = "none";
+      document.getElementById("P").style.display = "none";
+      
+      document.getElementById("name").style.display = "";
+      document.getElementById("midInput").value = user.empid;
+      document.getElementById("mnameInput").value = user.name;
+      document.getElementById("memailInput").value = user.email;
+      document.getElementById("mdobInput").value = user.dob;
+      document.getElementById("mroleInput").value = user.role;
+      document.getElementById("mdojInput").value = user.joining;
+      document.getElementById("mmobileInput").value = user.phone;
+   
+      var tele=document.getElementById("toempl")
+      var e=document.createElement("option")
+      e.value=user.name;
+     e.textContent=user.name;
+     tele.appendChild(e);
+
+      function getTasks() {
+        var xhrt = new XMLHttpRequest();
+        xhrt.onreadystatechange = function() {
+          if (xhrt.readyState == 4 && xhrt.status == 200) {
+            var data = JSON.parse(xhrt.responseText);
+            console.log(data)
+            var table = document.getElementById("ttableContent");
+            data.forEach(function(i) {
+              var ele = document.createElement("div");
+              ele.classList.add("tcontent");
+              ele.innerHTML = `
+                        <p id="sno" style="width: 10%;">${i.id}</p>
+                        <p id="pname" style="width: 15%;">${i.tname}</p>
+                        <p id="pem" style="width: 20%;">${i.pname}</p>
+                        <p id="pem" style="width: 25%;">${i.details}</p>
+                        <p id="pem" style="width: 12%;">${i.assignedon}</p>
+                        <p id="prole" style="width: 10%;">${i.deadline}</p>
+                        <button class="btn" id="cbtn"  onclick="ctask()" style="width: 8%;">Report status</button>
+                        
+                        
+                        `;
+                        var tele=document.getElementById("task")
+                    var e=document.createElement("option")
+                    e.style.fontSize="14px";
+                    e.style.gap="12px";
+                        e.value=i.tname;
+                     e.textContent=i.tname;
+                      tele.appendChild(e);
+                         table.appendChild(ele);
+
+            })
+          }
+        }
+        xhrt.open("GET", "http://localhost:5678/ProjectManagement/getEtasks?manager=" + user.name, true);
+
+        xhrt.send();
+      }
+      getTasks();
+
+    }
+
+    function getTasks() {
+      var user = JSON.parse(window.localStorage.getItem("user"));
+      var xhrt = new XMLHttpRequest();
+      xhrt.onreadystatechange = function() {
+        if (xhrt.readyState == 4 && xhrt.status == 200) {
+          var data = JSON.parse(xhrt.responseText);
+          console.log(data)
+          var table = document.getElementById("ttableContent");
+          data.forEach(function(i) {
+            var ele = document.createElement("div");
+            ele.classList.add("tcontent");
+            ele.innerHTML = `
+                        <p id="sno" style="width: 15%;">${i.id}</p>
+                        <p id="pname" style="width: 25%;">${i.tname}</p>
+                        <p id="pem" style="width: 20%;">${i.ename}</p>
+                        <p id="pem" style="width: 15%;">${i.assignedon}</p>
+                        <p id="prole" style="width: 15%;">${i.deadline}</p>
+                        <p id="pdob" style="width: 10%;">${i.status}</p>
+                        
+                        
+                        `;
+            table.appendChild(ele);
+
+          })
+        }
+      }
+      xhrt.open("GET", "http://localhost:5678/ProjectManagement/getTasks?manager=" + user.name, true);
+
+      xhrt.send();
+    }
+
+    function search() {
+      var contents = document.querySelectorAll(".content");
+      var filter = document.getElementById("inp").value;
+
+      for (var i = 0; i < contents.length; i++) {
+        var res = contents[i].textContent.trim().toUpperCase();
+        filter = filter.toUpperCase();
+        if (res.includes(filter)) {
+          contents[i].style.display = "";
+        } else {
+          contents[i].style.display = "none";
+        }
+
+      }
+    }
+
+    function searchP() {
+      var contents = document.querySelectorAll(".pcontent");
+      var filter = document.getElementById("pinp").value;
+
+      for (var i = 0; i < contents.length; i++) {
+        var res = contents[i].textContent.trim().toUpperCase();
+        filter = filter.toUpperCase();
+        if (res.includes(filter)) {
+          contents[i].style.display = "";
+        } else {
+          contents[i].style.display = "none";
+        }
+
+      }
+    }
+
+    function searchT() {
+      var contents = document.querySelectorAll(".tcontent");
+      var filter = document.getElementById("tinp").value;
+
+      for (var i = 0; i < contents.length; i++) {
+        var res = contents[i].textContent.trim().toUpperCase();
+        filter = filter.toUpperCase();
+        if (res.includes(filter)) {
+          contents[i].style.display = "";
+        } else {
+          contents[i].style.display = "none";
+        }
+
+      }
+    }
+  </script>
+</body>
+
+</html>

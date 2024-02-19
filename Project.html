@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="project.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;1,400;1,700&display=swap" rel="stylesheet">
+    <title>Project</title>
+  </head>
+  <body>
+    <div id="con" class="container">
+      <div class="ad">
+        <div class="imgContainer">
+
+            <img src="Project.jpg" alt="" class="logimg">
+            
+        </div>
+        
+      </div>
+      <div class="loginContainer">
+        <div class="login">
+          <div class="title">
+            <p
+              style="
+                font-weight: 700;
+                color: white;
+                letter-spacing: 1px;
+                font-size: 22px;
+              "
+            >
+              Add Project
+            </p>
+          </div>
+          <div class="inp">
+            <input type="text" name="name" id="name" placeholder="Project Name" />
+
+            <input style="margin-bottom: 10px;"
+              type="text"
+              name="details"
+              id="details"
+              placeholder="Project Details"
+            />
+          
+                <label for="date" >Set Deadline</label>
+                <input type="date" id="deadline">
+          </div>
+          <div class="links">
+            <button style="margin-top: 20px;" class="btn" onclick="handleProject()">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>   
+      </div>
+    </div>
+    <script>
+      
+function showApiResultModal(message, isSuccess) {
+  return new Promise((resolve) => {
+    if (isSuccess) {
+      Swal.fire({
+        title: "Success",
+        text: message,
+        icon: "success",
+      }).then(() => {
+        resolve(); 
+      });
+    } else {
+      Swal.fire({
+        title: "Failure",
+        text: message,
+        icon: "error",
+      }).then(() => {
+        resolve(); 
+      });
+    }
+  });
+}
+
+
+function handleProject(){
+
+  var name=document.getElementById("name").value;
+  var details=document.getElementById("details").value;
+  var deadline=document.getElementById("deadline").value;
+// console.log(name,password)
+  var xhttp=new XMLHttpRequest();
+  xhttp.onreadystatechange=function(){
+  if(this.readyState==4 && this.status==200 && this.responseText.trim()!=="Incorrect"){
+    // var r=JSON.parse(this.responseText);
+    console.log(this.responseText);
+    showApiResultModal("Successfully created",true);
+    setTimeout(function(){window.location.href = "http://localhost:5678/ProjectManagement/Home.html";},5000)
+    
+
+  }
+  else if(this.readyState==4) {
+    console.log(this.responseText);
+  }
+}
+  xhttp.open("POST","http://localhost:5678/ProjectManagement/addproject",true);
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+var data = "name=" + name + "&details=" + details+"&deadline=" + deadline;
+xhttp.send(data);
+}
+
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin</title>
+  <link rel="stylesheet" href="home.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Protest+Riot&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+  <div class="app">
+    <div class="nav">
+      <div class="title">
+        <p>Project Management</p>
+      </div>
+      <div class="links">
+        <p id="emp" class="selected" onclick="employees()">Employees</p>
+        <p id="pro" onclick="projects()">Projects</p>
+        <p id="charts" onclick="charts()">Charts</p>
+      </div>
+      <div class="profile">
+        <img src="userpic.jpg" alt="">
+        <p id="name" onclick="toggle()"></p>
+        <p id="logout" onclick="logout()">Logout</p>
+      </div>
+    </div>
+    <div class="Home" id="Home">
+      <div class="Employees" id="Employees">
+        <div class="top">
+          <div class="search">
+            <input type="text" placeholder="Enter text to search" oninput="search()" id="inp">
+            <span style="cursor: pointer;" class="material-symbols-outlined">
+              search
+            </span>
+          </div>
+          <div class="add">
+            <button class="btn" onclick="handleAdd()">Add Employee</button>
+          </div>
+        </div>
+        <div class="table">
+          <div class="heading">
+            <p style="width: 10%;">EmpId</p>
+            <p style="width: 15%;">Name</p>
+            <p style="width: 25%;">Email Id</p>
+            <p style="width: 10%;">Role</p>
+            <p style="width: 10%;">DOB</p>
+            <p style="width: 10%;">Mobile</p>
+            <p style="width: 20%;">Reporting Manager</p>
+          </div>
+          <hr style="color: black;width: 100%;" />
+          <div class="tableContent" id="tableContent">
+
+
+          </div>
+        </div>
+      </div>
+      <div class="Projects" id="Projects">
+        <div class="top">
+          <div class="search">
+            <input type="text" placeholder="Enter text to search" oninput="searchP()" id="pinp">
+            <span style="cursor: pointer;" class="material-symbols-outlined">
+              search
+            </span>
+          </div>
+          <div class="add">
+            <button class="btn" onclick="handleAddP()">Add Project</button>
+          </div>
+        </div>
+        <div class="table">
+          <div class="heading">
+            <p style="width: 15%;">Project Id</p>
+            <p style="width: 25%;">Name</p>
+            <p style="width: 20%;">Assigned on</p>
+            <p style="width: 20%;">Deadline</p>
+            <p style="width: 20%;">Status</p>
+          </div>
+          <hr style="color: black;width: 100%;" />
+          <div class="tableContent" id="ptableContent">
+          </div>
+        </div>
+      </div>
+      <div class="Projects" id="tasks">
+        <div class="top">
+          <div class="search">
+            <input type="text" placeholder="Enter text to search" oninput="searchT()" id="tinp">
+            <span style="cursor: pointer;" class="material-symbols-outlined">
+              search
+            </span>
+          </div>
+          <div class="back">
+            <button class="btn" style="position: absolute;top: 100px;right: 120px;" onclick="back()">Back</button>
+          </div>
+        </div>
+        <div class="table">
+          <div class="heading">
+            <p style="width: 10%;">Task Id</p>
+            <p style="width: 25%;">Task Name</p>
+            <p style="width: 20%;">Employee Name</p>
+            <p style="width: 15%;">Assigned on</p>
+            <p style="width: 15%;">Deadline</p>
+            <p style="width: 15%;">Status</p>
+          </div>
+          <hr style="color: black;width: 100%;" />
+          <div class="tableContent" id="TatableContent">
+          </div>
+        </div>
+      </div>
+      <div class="Charts" id="ChartsCon">
+        <div class="text" id="text">
+          <p>Choose project to show Data</p>
+        </div>
+        <div class="proname">
+          <p>Project Name :</p>
+          <select name="pronames" id="pronames">
+            <option value="" disabled selected hidden>Select an option below</option>
+          </select>
+          <button class="btn1" onclick="fetch()">Fetch</button>
+        </div>
+        <div class="Bar">
+          <div class="progress-bar" id="bar">
+            <div class="progress"></div>
+          </div>
+        </div>
+        <div class="bardetails" id="bardetails">
+          <div class="tt">
+            <p>Total No. Of Tasks : </p>
+            <p id="totaltask"></p>
+          </div>
+          <div class="tf">
+            <p>No. Of Tasks Finished : </p>
+            <p id="finished"></p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+  <script>
+    function fetch() {
+
+      var pname = document.getElementById("pronames").value;
+      console.log(pname);
+      if (pname !== "") {
+
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+
+            var data = (JSON.parse(xhr.responseText));
+            var total = data[0].nooftasks;
+            var finished = data[0].finished;
+            var unfinished = data[0].unfinished;
+            document.getElementById("totaltask").textContent = total;
+            document.getElementById("finished").textContent = finished;
+            document.getElementById("text").style.display = "none";
+            document.getElementById("bar").style.display = "";
+            document.getElementById("bardetails").style.display = "";
+            var fp = Math.ceil((finished / total) * 100)
+            const progressBar = document.querySelector('.progress');
+            const percentageCompleted = fp;
+            progressBar.style.height = percentageCompleted + '%';
+            progressBar.textContent = percentageCompleted + '%';
+          }
+        }
+        xhr.open("GET", "http://localhost:5678/ProjectManagement/getDetails?pname=" + pname, true);
+        xhr.send();
+      }
+    }
+
+    function back() {
+      document.getElementById("Projects").style.display = "";
+      document.getElementById("tasks").style.display = "none";
+    }
+
+    function handleAddP() {
+      window.location.href = "http://localhost:5678/ProjectManagement/Project.html"
+    }
+
+    function projects() {
+      document.getElementById("emp").classList.remove("selected");
+      document.getElementById("charts").classList.remove("selected");
+      document.getElementById("pro").classList.add("selected");
+      document.getElementById("Employees").style.display = "none";
+      document.getElementById("ChartsCon").style.display = "none";
+      document.getElementById("tasks").style.display = "none";
+      document.getElementById("Projects").style.display = "";
+    }
+
+    function employees() {
+      document.getElementById("emp").classList.add("selected");
+      document.getElementById("pro").classList.remove("selected");
+      document.getElementById("charts").classList.remove("selected");
+      document.getElementById("Employees").style.display = "";
+      document.getElementById("Projects").style.display = "none";
+      document.getElementById("ChartsCon").style.display = "none";
+      document.getElementById("tasks").style.display = "none";
+    }
+
+    function charts() {
+      document.getElementById("ChartsCon").style.display = "";
+      document.getElementById("emp").classList.remove("selected");
+      document.getElementById("pro").classList.remove("selected");
+      document.getElementById("charts").classList.add("selected");
+      document.getElementById("Employees").style.display = "none";
+      document.getElementById("Projects").style.display = "none";
+      document.getElementById("tasks").style.display = "none";
+
+    }
+
+    function logout() {
+
+      window.location.href = "http://localhost:5678/ProjectManagement/Login.html"
+    }
+    document.getElementById("Home").addEventListener("click", function() {
+      retoggle();
+    })
+
+    function toggle() {
+      document.getElementById("logout").style.display = "";
+      document.getElementById("name").style.display = "none";
+    }
+
+    function retoggle() {
+      document.getElementById("logout").style.display = "none";
+      document.getElementById("name").style.display = "";
+    }
+
+    function handleAdd() {
+      window.location.href = ("http://localhost:5678/ProjectManagement/Register.html")
+    }
+    window.onload = function() {
+      var user = JSON.parse(window.localStorage.getItem("user"));
+      document.getElementById("name").innerHTML = user.name;
+      document.getElementById("logout").style.display = "none";
+      document.getElementById("Projects").style.display = "none";
+      document.getElementById("ChartsCon").style.display = "none";
+      document.getElementById("tasks").style.display = "none";
+      document.getElementById("bar").style.display = "none";
+      document.getElementById("bardetails").style.display = "none";
+      document.getElementById("text").style.display = "";
+      document.getElementById("name").style.display = "";
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          var data = JSON.parse(xhr.responseText);
+          console.log(data)
+          var table = document.getElementById("tableContent");
+          data.forEach(function(i) {
+            var ele = document.createElement("div");
+            ele.classList.add("content");
+            ele.innerHTML = `
+                        <p id="sno" style="width: 10%;">${i.empid}</p>
+                        <p id="pname" style="width: 15%;">${i.name}</p>
+                        <p id="pem" style="width: 25%;">${i.email}</p>
+                        <p id="prole" style="width: 10%;">${i.role}</p>
+                        <p id="pdob" style="width: 10%;">${i.dob}</p>
+                        <p id="pno" style="width: 10%;">${i.phone}</p>
+                        <p id="pman" style="width: 20%;">${i.reportingto}</p>
+                        
+                        `;
+            table.appendChild(ele);
+            
+          })
+        }
+      }
+      xhr.open("POST", "http://localhost:5678/ProjectManagement/getEmployees", true);
+      xhr.setRequestHeader(
+        "Content-type",
+        "application/x-www-form-urlencoded"
+      );
+      var data = "user=admin";
+      xhr.send(data);
+
+
+
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200 && this.responseText.trim() !== "Incorrect") {
+          var data = JSON.parse(this.responseText);
+          console.log(data)
+          var op = document.getElementById("pronames");
+          op.innerHTML = "";
+          op.innerHTML = `<option value="" disabled selected hidden>Select an option below</option>`;
+          var table = document.getElementById("ptableContent");
+          data.forEach(function(i) {
+            var ele = document.createElement("div");
+            ele.classList.add("pcontent");
+            ele.style.cursor = "pointer";
+            ele.innerHTML = `
+                     
+                        <p id="sno" style="width: 15%;">${i.id}</p>
+                        <p id="pname" style="width: 25%;">${i.name}</p>
+                        <p id="pem" style="width: 20%;">${i.assignedon}</p>
+                        <p id="prole" style="width: 20%;">${i.deadline}</p>
+                        <p id="pdob" style="width: 20%;">${i.status}</p>
+                        `;
+            ele.addEventListener("click", function() {
+              viewPtasks(i.name);
+            });
+            table.appendChild(ele);
+            var el = document.createElement("option");
+            el.textContent = i.name;
+            el.value = i.name;
+            op.appendChild(el);
+
+
+          })
+        } else if (this.readyState == 4) {
+          console.log(this.responseText);
+        }
+      }
+      xhttp.open("GET", "http://localhost:5678/ProjectManagement/getproject", true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.send();
+
+
+
+    }
+
+    function viewPtasks(name) {
+      console.log(name);
+      document.getElementById("Projects").style.display = "none";
+      document.getElementById("tasks").style.display = "";
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          var data = (JSON.parse(xhr.responseText));
+          var table = document.getElementById("TatableContent");
+          table.innerHTML = "";
+          data.forEach(function(i) {
+            var ele = document.createElement("div");
+            ele.classList.add("tcontent");
+            ele.innerHTML = `
+                     
+                        <p id="sno" style="width: 10%;">${i.id}</p>
+                        <p id="pname" style="width: 25%;">${i.tname}</p>
+                        <p id="pname" style="width: 20%;">${i.ename}</p>
+                        <p id="pem" style="width: 15%;">${i.assignedon}</p>
+                        <p id="prole" style="width: 15%;">${i.deadline}</p>
+                        <p id="pdob" style="width: 15%;">${i.status}</p>
+                        `;
+            table.appendChild(ele);
+
+
+          })
+        }
+      }
+      xhr.open('GET', "http://localhost:5678/ProjectManagement/getProjectTasks?pname=" + name, true);
+      xhr.send();
+    }
+
+    function search() {
+      var contents = document.querySelectorAll(".content");
+      var filter = document.getElementById("inp").value;
+
+      for (var i = 0; i < contents.length; i++) {
+        var res = contents[i].textContent.trim().toUpperCase();
+        filter = filter.toUpperCase();
+        if (res.includes(filter)) {
+          contents[i].style.display = "";
+        } else {
+          contents[i].style.display = "none";
+        }
+
+      }
+    }
+
+    function searchP() {
+      var contents = document.querySelectorAll(".pcontent");
+      var filter = document.getElementById("pinp").value;
+
+      for (var i = 0; i < contents.length; i++) {
+        var res = contents[i].textContent.trim().toUpperCase();
+        filter = filter.toUpperCase();
+        if (res.includes(filter)) {
+          contents[i].style.display = "";
+        } else {
+          contents[i].style.display = "none";
+        }
+
+      }
+    }
+
+    function searchT() {
+      var contents = document.querySelectorAll(".tcontent");
+      var filter = document.getElementById("tinp").value;
+
+      for (var i = 0; i < contents.length; i++) {
+        var res = contents[i].textContent.trim().toUpperCase();
+        filter = filter.toUpperCase();
+        if (res.includes(filter)) {
+          contents[i].style.display = "";
+        } else {
+          contents[i].style.display = "none";
+        }
+
+      }
+    }
+  </script>
+</body>
+
+</html>
